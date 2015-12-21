@@ -6,7 +6,7 @@ output:
 ---
 ## Loading and preprocessing the data
 
-```{r echo=TRUE, cache = TRUE}
+```{r echo=TRUE}
 unzip<-unzip("activity.zip",unzip="internal")
 data<-read.csv(unzip, colClasses = c("integer", "Date", "factor"))
 data$date<-format(data$date, "%Y-%m-%d", usetz = FALSE)
@@ -15,7 +15,7 @@ data$date<-format(data$date, "%Y-%m-%d", usetz = FALSE)
 ## What is mean total number of steps taken per day?
 
 Here's a histogram, representing the total number of steps taken per day.
-``` {r echo = TRUE, cache = TRUE}
+``` {r echo = TRUE}
 ag<-aggregate(steps ~ date, data = data, sum)
 library(ggplot2)
 qplot(steps, data = ag)
@@ -27,7 +27,7 @@ The mean of the total number of steps taken per day is `r mean_steps`. The media
 
 ## What is the average daily activity pattern?
 
-``` {r echo = TRUE, cache = TRUE}
+``` {r echo = TRUE}
 daily_pat<-aggregate(steps ~ interval, data = data, mean)
 library(ggplot2)
 g<-ggplot(daily_pat, aes(interval, steps))
@@ -41,7 +41,7 @@ The `r max_int` 5-min interval on average across all the days in the dataset con
 
 ## Imputing missing values
 
-```{r echo = TRUE, cache = TRUE}
+```{r echo = TRUE}
 z<-na.omit(data)
 nNA<-nrow(data) - nrow(z)
 sum(is.na(data$steps))
@@ -53,7 +53,7 @@ The total number of observations with missing values in the dataset is `r nNA`.
 We can see that only steps column has NAs
 I will substitute them with mean data for every interval.
 
-``` {r echo = TRUE, cache = TRUE}
+``` {r echo = TRUE}
 NAs<-which(is.na(data$steps) == TRUE)
 
 data_new<-data
@@ -76,5 +76,29 @@ The mean of the total number of steps taken per day is `r mean_steps_n`. The med
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
+```{r echo = TRUE}
+w<-weekdays(data_new$date)
+data_new$day<-rep(NA)
+for (i in 1:nrow(data_new)) {
+        if (w[i] == "Saturday")
+        {
+                data_new[i,5] <- c("weekend")
+        
+        }
+        else if (w[i] == "Sunday")
+        {
+                data_new[i,5] <- c("weekend")
+        
+        }
+        
+        else {
+                data_new[i,5] <- c("weekday")
+        }
+} 
 
+daily_pat_n<-aggregate(steps ~ interval + day, data = data_new, mean)
+library(ggplot2)
+g<-ggplot(daily_pat_n, aes(interval, steps))
+g + geom_point(type = "l") + facet_wrap(~ day, nrow = 2, ncol = 1)
+```
 

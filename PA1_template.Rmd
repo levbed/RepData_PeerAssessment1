@@ -8,7 +8,7 @@ output:
 
 ```{r echo=TRUE}
 unzip<-unzip("activity.zip",unzip="internal")
-data<-read.csv(unzip, colClasses = c("integer", "Date", "factor"))
+data<-read.csv(unzip, colClasses = c("integer", "Date", "integer"))
 data$date<-as.Date(data$date, format = "%Y-%m-%d", usetz = FALSE)
 ```
 

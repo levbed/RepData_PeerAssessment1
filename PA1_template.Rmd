@@ -9,7 +9,7 @@ output:
 ```{r echo=TRUE}
 unzip<-unzip("activity.zip",unzip="internal")
 data<-read.csv(unzip, colClasses = c("integer", "Date", "factor"))
-data$date<-format(data$date, "%Y-%m-%d", usetz = FALSE)
+data$date<-as.Date(data$date, format = "%Y-%m-%d", usetz = FALSE)
 ```
 
 ## What is mean total number of steps taken per day?
@@ -77,15 +77,15 @@ The mean of the total number of steps taken per day is `r mean_steps_n`. The med
 ## Are there differences in activity patterns between weekdays and weekends?
 
 ```{r echo = TRUE}
-w<-weekdays(data_new$date)
+data_new$weekday<-weekdays(data_new$date)
 data_new$day<-rep(NA)
 for (i in 1:nrow(data_new)) {
-        if (w[i] == "Saturday")
+        if (data_new[i,4] == "Saturday")
         {
                 data_new[i,5] <- c("weekend")
         
         }
-        else if (w[i] == "Sunday")
+        else if (data_new[i,4] == "Sunday")
         {
                 data_new[i,5] <- c("weekend")
         

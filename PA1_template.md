@@ -5,7 +5,7 @@
 ```r
 unzip<-unzip("activity.zip",unzip="internal")
 data<-read.csv(unzip, colClasses = c("integer", "Date", "factor"))
-data$date<-format(data$date, "%Y-%m-%d", usetz = FALSE)
+data$date<-as.Date(data$date, format = "%Y-%m-%d", usetz = FALSE)
 ```
 
 ## What is mean total number of steps taken per day?
@@ -111,7 +111,37 @@ mean_steps_n<-mean(ag_new$steps)
 median_steps_n<-median(ag_new$steps)
 ```
 
-The mean of the total number of steps taken per day is 1.0766189\times 10^{4}. The median of the total number of steps taken per day is 1.0766189\times 10^{4}. Imputing the NAs have caused the median steps data to become noninteger.
+The mean of the total number of steps taken per day is 1.0766189\times 10^{4}. The median of the total number of steps taken per day is 1.0766189\times 10^{4}. Imputing the NAs have caused the median steps data to become noninteger. The total number of everyday steps have of course incresased!
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+
+```r
+data_new$weekday<-weekdays(data_new$date)
+data_new$day<-rep(NA)
+for (i in 1:nrow(data_new)) {
+        if (data_new[i,4] == "Saturday")
+        {
+                data_new[i,5] <- c("weekend")
+        
+        }
+        else if (data_new[i,4] == "Sunday")
+        {
+                data_new[i,5] <- c("weekend")
+        
+        }
+        
+        else {
+                data_new[i,5] <- c("weekday")
+        }
+} 
+
+daily_pat_n<-aggregate(steps ~ interval + day, data = data_new, mean)
+library(ggplot2)
+g<-ggplot(daily_pat_n, aes(interval, steps))
+g + geom_point(type = "l") + facet_wrap(~ day, nrow = 2, ncol = 1)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+
